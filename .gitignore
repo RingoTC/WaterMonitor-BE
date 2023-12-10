@@ -48,3 +48,5 @@ Thumbs.db
 mongodb-data/
 
 # End of .gitignore
+
+.env
