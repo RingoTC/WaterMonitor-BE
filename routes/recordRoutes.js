@@ -125,22 +125,6 @@ router.get('/latest/:MonitoringLocationIdentifier', async (req, res) => {
     }
 });
 
-router.get('/latest/:MonitoringLocationIdentifier', async (req, res) => {
-    const MonitoringLocationIdentifier = req.params.MonitoringLocationIdentifier;
-    try {
-        const record = await Record.findOne({ MonitoringLocationIdentifier: MonitoringLocationIdentifier }).sort({ EstimatedDate: -1 });
-
-        if (!record) {
-            return res.status(404).json({ message: 'Record not found' });
-        }
-
-        return res.json(record);
-    } catch (error) {
-        console.error('Error querying MongoDB:', error);
-        return res.status(500).json({ message: 'Internal Server Error' });
-    }
-});
-
 router.delete('/delete/:id', async (req, res) => {
     const id = req.params.id;
     try {
@@ -154,8 +138,7 @@ router.delete('/delete/:id', async (req, res) => {
         return res.status(500).json({ message: 'Internal Server Error' });
     }
 });
-router.put('/updateLatest/:MonitoringLocationIdentifier', async (req, res) => {
-    const monitoringLocationIdentifier = req.params.MonitoringLocationIdentifier;
+router.put('/updateLatest/', async (req, res) => {
 
     const {
         _id,
