@@ -26,10 +26,18 @@ const fetchChatGPT = async (place) => {
 router.get('/:place', async (req, res) => {
     const place = req.params.place;
     const result = await fetchChatGPT(place);
-    res.json({
-        "status": "success",
-        "data": result.choices[0].message.content,
-    });
+    try {
+        res.json({
+            "status": "success",
+            "data": result.choices[0].message.content,
+        });
+    }catch (error) {
+        res.json({
+            "status": "error",
+            "message": error.message,
+            "data":"OpenAI server error"
+        });
+    }
 });
 
 module.exports = router;

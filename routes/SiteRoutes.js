@@ -29,5 +29,23 @@ router.get('/all', async (req, res) => {
     }
 });
 
+router.delete('/delete', async (req, res) => {
+    const { MonitoringLocationIdentifier } = req.body;
+
+    try {
+        console.log("delete site", MonitoringLocationIdentifier);
+        const site = await Site.findOneAndDelete({ MonitoringLocationIdentifier: MonitoringLocationIdentifier });
+
+        if (!site) {
+            return res.status(404).json({ message: 'Site not found' });
+        }
+
+        return res.json(site);
+    } catch (error) {
+        console.error('Error querying MongoDB:', error);
+        return res.status(500).json({ message: 'Internal Server Error' });
+    }
+});
+
 
 module.exports = router;

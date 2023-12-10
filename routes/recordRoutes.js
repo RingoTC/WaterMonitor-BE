@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Record = require('../models/record');
-
+const mongoose = require('mongoose');
 router.get('/find/:MonitoringLocationIdentifier', async (req, res) => {
     const MonitoringLocationIdentifier = req.params.MonitoringLocationIdentifier;
 
@@ -154,6 +154,43 @@ router.delete('/delete/:id', async (req, res) => {
         return res.status(500).json({ message: 'Internal Server Error' });
     }
 });
+router.put('/updateLatest/:MonitoringLocationIdentifier', async (req, res) => {
+    const monitoringLocationIdentifier = req.params.MonitoringLocationIdentifier;
 
+    const {
+        _id,
+        pH,
+        DO,
+        NH4N,
+        COD,
+    } = req.body;
+
+    try {
+        // 找到对应监测位置的最新记录
+        try {
+            const updatedRecord = await Record.findOneAndUpdate(
+                { _id: new mongoose.Types.ObjectId(_id) },
+                { $set: { pH_Value: parseFloat(pH), DO_Value: parseFloat(DO), NH4N_Value: parseFloat(NH4N), COD_Value: parseFloat(COD) } },
+                { new: true }
+            );
+            if (!updatedRecord) {
+                return res.status(404).json({ message: 'Record not found' });
+            }
+
+            console.log("_id", _id);
+            console.log("pH", pH);
+
+            console.log('Updated record:', updatedRecord);
+
+            return res.json(updatedRecord);
+        }catch (error) {
+            console.error('Error updating latest record:', error);
+            return res.status(500).json({message: 'Internal Server Error'});
+        }
+    } catch (error) {
+        console.error('Error updating latest record:', error);
+        return res.status(500).json({ message: 'Internal Server Error' });
+    }
+});
 
 module.exports = router;
