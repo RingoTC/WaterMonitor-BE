@@ -91,7 +91,7 @@ router.post('/addticket', async (req, res) => {
             MonitoringLocationDescriptionText, IndicatorsName,
             Value, Unit, status } = req.body;
 
-        const EstimatedDate = new Date(); // Set the current date and time here
+        const EstimatedDate = new Date(); 
 
         const newRecord = new Record({ 
             MonitoringLocationIdentifier, MonitoringYear, MonitoringWeek, 
@@ -101,7 +101,7 @@ router.post('/addticket', async (req, res) => {
 
         await newRecord.save();
 
-        return res.status(201).json(newRecord); // Send back the new record with EstimatedDate
+        return res.status(201).json(newRecord); 
     } catch (error) {
         console.error('Error saving to MongoDB:', error);
         return res.status(500).json({ message: 'Internal Server Error', error: error.message });
@@ -155,5 +155,31 @@ router.delete('/delete/:id', async (req, res) => {
     }
 });
 
+router.put('/updateticket/:id', async (req, res) => {
+    const id = req.params.id;
+    const updateData = req.body;
+    try {
+        const updatedRecord = await Record.findByIdAndUpdate(id, updateData, { new: true });
+        if (!updatedRecord) {
+            return res.status(404).json({ message: 'Record not found' });
+        }
+        return res.json(updatedRecord);
+    } catch (error) {
+        console.error('Error updating MongoDB:', error);
+        return res.status(500).json({ message: 'Internal Server Error', error: error.message });
+    }
+});
+
+router.get('/ticket/:id', async (req, res) => {
+    try {
+        const ticket = await Record.findById(req.params.id);
+        if (!ticket) {
+            return res.status(404).json({ message: 'Ticket not found' });
+        }
+        res.json(ticket);
+    } catch (error) {
+        res.status(500).json({ message: 'Internal Server Error', error: error.message });
+    }
+});
 
 module.exports = router;

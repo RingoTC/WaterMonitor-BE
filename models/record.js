@@ -3,8 +3,8 @@
 const mongoose = require('mongoose');
 
 const recordSchema = new mongoose.Schema({
-    _id: mongoose.Schema.Types.ObjectId,
-    MonitoringLocationIdentifier: { type: Number, required: true },
+    // _id: mongoose.Schema.Types.ObjectId,
+    MonitoringLocationIdentifier: { type: Number},
     LongitudeMeasure: { type: Number },
     LatitudeMeasure: { type: Number },
     MonitoringYear: { type: Number },
@@ -15,6 +15,10 @@ const recordSchema = new mongoose.Schema({
     Value: { type: Number },
     Unit: { type: String },
     status: { type: String, default: "loading" },
+    COD:{ type: Number },
+    DO_Value: { type: Number },
+    NH4N_Value: { type: Number },
+    pH_Value: { type: Number }
 });
 
 recordSchema.index({ MonitoringLocationIdentifier: 1, MonitoringYear: 1, MonitoringWeek: 1, IndicatorsName: 1 }, { unique: true });

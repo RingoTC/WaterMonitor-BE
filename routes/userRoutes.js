@@ -33,7 +33,8 @@ router.get('/:username', async (req, res) => {
 
 router.post('/add', async (req, res) => {
     // different from auth.register, its only for admin to add user
-    const { username, password, first_name, last_name, email, role } = req.body;
+    const { username, password, company, firstName, lastName, email, cellphone,
+        city, country, role, likes } = req.body;
 
     try {
         const existingUser = await User.findOne({ username: username });
@@ -42,7 +43,8 @@ router.post('/add', async (req, res) => {
             return res.status(400).json({ message: 'User with the same username already exists' });
         }
 
-        const newUser = new User({ username, password, first_name, last_name, email, role });
+        const newUser = new User({ username, password, company, firstName, lastName, email, cellphone,
+                                    city, country, role, likes});
         await newUser.save();
 
         return res.json({ message: 'User added successfully' });
