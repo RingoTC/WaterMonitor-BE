@@ -182,4 +182,20 @@ router.get('/ticket/:id', async (req, res) => {
     }
 });
 
+
+router.get('/finduserticket/:username', async (req, res) => {
+    const username = req.params.username;
+    try {
+        const records = await Record.find({ reporter: username });
+        if (records.length === 0) {
+            return res.status(404).json({ message: 'No records found for this user' });
+        }
+        return res.json(records);
+    } catch (error) {
+        console.error('Error querying MongoDB:', error);
+        return res.status(500).json({ message: 'Internal Server Error', error: error.message });
+    }
+});
+
+
 module.exports = router;

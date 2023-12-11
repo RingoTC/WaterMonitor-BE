@@ -18,7 +18,8 @@ const recordSchema = new mongoose.Schema({
     COD:{ type: Number },
     DO_Value: { type: Number },
     NH4N_Value: { type: Number },
-    pH_Value: { type: Number }
+    pH_Value: { type: Number },
+    
 });
 
 recordSchema.index({ MonitoringLocationIdentifier: 1, MonitoringYear: 1, MonitoringWeek: 1, IndicatorsName: 1 }, { unique: true });
