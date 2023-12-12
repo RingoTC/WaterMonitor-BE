@@ -176,4 +176,32 @@ router.put('/updateLatest/', async (req, res) => {
     }
 });
 
+router.put('/updateticket/:id', async (req, res) => {
+    const id = req.params.id;
+    const updateData = req.body;
+    try {
+        const updatedRecord = await Record.findByIdAndUpdate(id, updateData, { new: true });
+        if (!updatedRecord) {
+            return res.status(404).json({ message: 'Record not found' });
+        }
+        return res.json(updatedRecord);
+    } catch (error) {
+        console.error('Error updating MongoDB:', error);
+        return res.status(500).json({ message: 'Internal Server Error', error: error.message });
+    }
+});
+
+
+router.get('/ticket/:id', async (req, res) => {
+    try {
+        const ticket = await Record.findById(req.params.id);
+        if (!ticket) {
+            return res.status(404).json({ message: 'Ticket not found' });
+        }
+        res.json(ticket);
+    } catch (error) {
+        res.status(500).json({ message: 'Internal Server Error', error: error.message });
+    }
+});
+
 module.exports = router;
