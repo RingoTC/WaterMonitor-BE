@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/user');
 const { default: axios } = require('axios');
-
+const { isAuthenticated, isAuthorizedUser, isAdmin, isRequestedUser} = require('../middleware/authMiddleware');
 router.get('/all', async (req, res) => {
     try {
         const users = await User.find();
@@ -14,8 +14,26 @@ router.get('/all', async (req, res) => {
     }
 });
 
-router.get('/:username', async (req, res) => {
+// router.get('/:username', async (req, res) => {
+//     const username = req.params.username;
+//
+//     try {
+//         const user = await User.findOne({ username: username });
+//
+//         if (!user) {
+//             return res.status(404).json({ message: 'User not found' });
+//         }
+//
+//         return res.json(user);
+//     } catch (error) {
+//         console.error('Error querying MongoDB:', error);
+//         return res.status(500).json({ message: 'Internal Server Error' });
+//     }
+// });
+
+const isCurrentUserForQuery = async (req, res, next) => {
     const username = req.params.username;
+    const currentUser = req.user; // Assuming you have a middleware that sets the current user in req.user
 
     try {
         const user = await User.findOne({ username: username });
@@ -24,15 +42,32 @@ router.get('/:username', async (req, res) => {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        return res.json(user);
+        if (user.username === currentUser.username) {
+            req.authorizedUser = user;
+        } else {
+            req.authorizedUser = {
+                username: user.username,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                role: user.role,
+                email: user.email,
+                skills: user.skills,
+            };
+        }
+
+        next();
     } catch (error) {
         console.error('Error querying MongoDB:', error);
         return res.status(500).json({ message: 'Internal Server Error' });
     }
+};
+
+router.get('/:username', isAuthenticated, isCurrentUserForQuery, async (req, res) => {
+    const authorizedUser = req.authorizedUser;
+    return res.json(authorizedUser);
 });
 
-router.post('/add', async (req, res) => {
-    // different from auth.register, its only for admin to add user
+router.post('/add', isAdmin,async (req, res) => {
     const { username, password, first_name, last_name, email, role } = req.body;
 
     try {
@@ -52,7 +87,7 @@ router.post('/add', async (req, res) => {
     }
 });
 
-router.delete('/delete/:username', async (req, res) => {
+router.delete('/delete/:username', isAdmin,async (req, res) => {
     const username = req.params.username;
 
     try {
@@ -69,7 +104,7 @@ router.delete('/delete/:username', async (req, res) => {
     }
 });
 
-router.put('/change/:username', async (req, res) => {
+router.put('/change/:username', isAuthorizedUser,async (req, res) => {
     const username = req.params.username;
     const updatedUserInfo = req.body;
 
@@ -87,7 +122,7 @@ router.put('/change/:username', async (req, res) => {
     }
 });
 
-router.post('/change/:username', async (req, res) => {
+router.post('/change/:username', isAuthorizedUser ,async (req, res) => {
     const username = req.params.username;
     const updatedUserInfo = req.body.newSkill;
     // console.log(req.body);
@@ -99,8 +134,6 @@ router.post('/change/:username', async (req, res) => {
         }
 
         if (updatedUserInfo) {
-            // console.log("Updated user info is " + updatedUserInfo);
-
             const skillDocument = {
                 name: updatedUserInfo.name,
                 proficiency: updatedUserInfo.proficiency,
@@ -109,13 +142,9 @@ router.post('/change/:username', async (req, res) => {
                 certificationExpiryDate: updatedUserInfo.expirationDate || null,
             };
             updatedUser.skills.push(skillDocument);
-            // console.log("Updated skill is " + updatedUser.skills);
-
         }
 
         const savedUser = await updatedUser.save();
-
-        // console.log("Saved user skill is " + savedUser.skills);
 
         return res.json(savedUser);
     } catch (error) {
@@ -124,7 +153,7 @@ router.post('/change/:username', async (req, res) => {
     }
 });
 
-router.delete('/change/:username/skills/:skillId', async (req, res) => {
+router.delete('/change/:username/skills/:skillId', isAuthorizedUser,async (req, res) => {
     const { username, skillId } = req.params;
     try {
 
@@ -145,7 +174,7 @@ router.delete('/change/:username/skills/:skillId', async (req, res) => {
     }
 });
 
-router.put('/change/:username/skills/:skillId', async (req, res) => {
+router.put('/change/:username/skills/:skillId', isAuthorizedUser, async (req, res) => {
     const { username, skillId } = req.params;
     const updatedSkillData = {
         ...req.body,

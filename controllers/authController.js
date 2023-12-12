@@ -94,10 +94,15 @@ exports.logout = (req, res, next) => {
     res.send('Logged out successfully');
 };
 
-exports.checkAuth = (req, res) => {
+const checkAuthMiddleware = (req, res, next) => {
     if (req.isAuthenticated()) {
-        res.send('Authenticated');
+        return next();
     } else {
-        res.send('Not authenticated');
+        return res.status(401).json({ status: 'error', code: 'Authentication required' });
     }
 };
+
+// 修改后的 checkAuth 路由处理函数，使用新的中间件
+exports.checkAuth = [checkAuthMiddleware, (req, res) => {
+    res.json({ status: 'success', message: 'This is a secure route', user: req.user });
+}];
