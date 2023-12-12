@@ -41,9 +41,10 @@ db.on('error', (err) => {
 });
 
 app.use(cors({
-    origin: 'http://localhost:3000',
+    origin: process.env.CORS_ORIGIN,
     credentials: true,
 }));
+console.log("CORS", process.env.CORS_ORIGIN);
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(session({
