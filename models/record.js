@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 
 const recordSchema = new mongoose.Schema({
     MonitoringLocationIdentifier: Number,
+    MonitoringLocationDescriptionText:String,
     EstimatedDate: Date,
     name: String,
     COD_Value: Number,
