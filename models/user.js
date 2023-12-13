@@ -26,7 +26,7 @@ const userSchema = new mongoose.Schema({
     likes:{type:Array, default:[]},
     role: {
         type: String,
-        enum: ["MANAGER", "ADMIN", "REPORTER"],
+        enum: ["VIEWER", "ADMIN", "REPORTER"],
         default: "ADMIN" },
 
     about: {type: String},
