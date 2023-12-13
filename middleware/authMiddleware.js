@@ -2,7 +2,6 @@
 
 exports.isAuthenticated = (req, res, next) => {
     if (req.isAuthenticated()) {
-        console.log("isAuthenticated");
         return next();
     } else {
         console.log("isAuthenticated error");

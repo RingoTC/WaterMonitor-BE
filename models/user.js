@@ -1,6 +1,7 @@
 // models/userData.js
 
 const mongoose = require('mongoose');
+const {router} = require("express/lib/application");
 
 const skillSchema = new mongoose.Schema({
     name: String,
@@ -22,6 +23,7 @@ const userSchema = new mongoose.Schema({
     cellphone: {type: String},
     city: {type: String},
     country: {type: String},
+    likes:{type:Array, default:[]},
     role: {
         type: String,
         enum: ["MANAGER", "ADMIN", "REPORTER"],
@@ -34,7 +36,6 @@ const userSchema = new mongoose.Schema({
     },
 
     { collection: "users" });
-
 
 const User = mongoose.model('Users', userSchema, 'users');
 

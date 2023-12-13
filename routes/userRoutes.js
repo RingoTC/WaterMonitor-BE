@@ -14,26 +14,9 @@ router.get('/all', async (req, res) => {
     }
 });
 
-// router.get('/:username', async (req, res) => {
-//     const username = req.params.username;
-//
-//     try {
-//         const user = await User.findOne({ username: username });
-//
-//         if (!user) {
-//             return res.status(404).json({ message: 'User not found' });
-//         }
-//
-//         return res.json(user);
-//     } catch (error) {
-//         console.error('Error querying MongoDB:', error);
-//         return res.status(500).json({ message: 'Internal Server Error' });
-//     }
-// });
-
 const isCurrentUserForQuery = async (req, res, next) => {
     const username = req.params.username;
-    const currentUser = req.user; // Assuming you have a middleware that sets the current user in req.user
+    const currentUser = req.user;
 
     try {
         const user = await User.findOne({ username: username });
@@ -62,10 +45,6 @@ const isCurrentUserForQuery = async (req, res, next) => {
     }
 };
 
-router.get('/:username', isAuthenticated, isCurrentUserForQuery, async (req, res) => {
-    const authorizedUser = req.authorizedUser;
-    return res.json(authorizedUser);
-});
 
 router.post('/add', isAdmin,async (req, res) => {
     const { username, password, first_name, last_name, email, role } = req.body;
@@ -224,6 +203,49 @@ router.put('/update-reminder/:username', async (req, res) => {
         console.error('Error updating user reminder:', error);
         return res.status(500).json({ message: 'Internal Server Error' });
     }
+});
+
+router.get('/like', isAuthenticated, async (req, res) => {
+    const { likedUsername } = req.query;
+
+    try {
+        const currentUser = await User.findById(req.user._id);
+
+        const likedUser = await User.findOne({ username: likedUsername });
+
+        if (likedUser) {
+            currentUser.likes = currentUser.likes || [];
+            if (!currentUser.likes.includes(likedUsername)) {
+                currentUser.likes.push(likedUsername);
+                await currentUser.save();
+                res.json({ message: `${likedUsername} added to your likes successfully` });
+            } else {
+                res.json({ message: `${likedUsername} is already in your likes` });
+            }
+        } else {
+            res.status(404).json({ error: `User ${likedUsername} not found` });
+        }
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+
+router.get('/likes', isAuthenticated,async (req, res) => {
+    try {
+        const users = await User.find({ likes: { $exists: true, $not: { $size: 0 } } });
+        res.json(users);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+router.get('/:username', isAuthenticated, isCurrentUserForQuery, async (req, res) => {
+    const authorizedUser = req.authorizedUser;
+    return res.json(authorizedUser);
 });
 
 module.exports = router;
