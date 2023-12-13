@@ -16,7 +16,8 @@ exports.register = (req, res) => {
         cellphone,
         city,
         country,
-        like
+        like,
+        reminder
     } = req.body;
 
     // Check if the username already exists in the database
@@ -44,7 +45,8 @@ exports.register = (req, res) => {
                     cellphone: cellphone,
                     city: city,
                     country: country,
-                    like: like
+                    like: like,
+                    reminder: reminder
                 });
 
                 newUser.save()
