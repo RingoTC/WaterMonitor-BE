@@ -233,9 +233,17 @@ router.get('/like', isAuthenticated, async (req, res) => {
 });
 
 
-router.get('/likes', isAuthenticated,async (req, res) => {
+router.get('/likes', isAuthenticated, async (req, res) => {
     try {
-        const users = await User.find({ likes: { $exists: true, $not: { $size: 0 } } });
+        const likedUsernames = [];
+        const currentUser = req.user;
+
+        if (currentUser.likes && currentUser.likes.length > 0) {
+            likedUsernames.push(...currentUser.likes);
+        }
+
+        const users = await User.find({ username: { $in: likedUsernames } });
+
         res.json(users);
     } catch (error) {
         console.error(error);

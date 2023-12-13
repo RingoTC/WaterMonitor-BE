@@ -4,8 +4,7 @@ const router = express.Router();
 
 const fetchChatGPT = async (place) => {
     const openai = new OpenAI({
-        apiKey: "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",
-        dangerouslyAllowBrowser:true,
+        apiKey: process.env.OPENAI_KEY,
     });
 
     try {
