@@ -15,7 +15,6 @@ const recordSchema = new mongoose.Schema({
     LatitudeMeasure: Number,
     reporter: {
         type: [String], // Array of Strings for reporters
-        default: ["hanliao", "Anna_Zhang"],
     },
     status: {
         type: String,
