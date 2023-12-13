@@ -87,16 +87,31 @@ router.get('/totalLoading', async (req, res) => {
 
 router.post('/addticket', async (req, res) => {
     try {
-        const { MonitoringLocationIdentifier, MonitoringYear, MonitoringWeek, 
-            MonitoringLocationDescriptionText, IndicatorsName,
-            Value, Unit, status } = req.body;
+        const {  MonitoringLocationIdentifier,
+            MonitoringLocationDescriptionText,
+            name,
+            COD_Value,
+            DO_Value,
+            NH4N_Value,
+            pH_Value,
+            LongitudeMeasure,
+            LatitudeMeasure,
+            status } = req.body;
 
         const EstimatedDate = new Date(); // Set the current date and time here
 
         const newRecord = new Record({ 
-            MonitoringLocationIdentifier, MonitoringYear, MonitoringWeek, 
-            MonitoringLocationDescriptionText, EstimatedDate, IndicatorsName,
-            Value, Unit, status 
+            MonitoringLocationIdentifier,
+            MonitoringLocationDescriptionText,
+            EstimatedDate,
+            name,
+            COD_Value,
+            DO_Value,
+            NH4N_Value,
+            pH_Value,
+            LongitudeMeasure,
+            LatitudeMeasure,
+            status
         });
 
         await newRecord.save();
@@ -176,6 +191,21 @@ router.put('/updateLatest/', async (req, res) => {
     }
 });
 
+// router.put('/updateticket/:id', async (req, res) => {
+//     const id = req.params.id;
+//     const updateData = req.body;
+//     try {
+//         const updatedRecord = await Record.findByIdAndUpdate(id, updateData, { new: true });
+//         if (!updatedRecord) {
+//             return res.status(404).json({ message: 'Record not found' });
+//         }
+//         return res.json(updatedRecord);
+//     } catch (error) {
+//         console.error('Error updating MongoDB:', error);
+//         return res.status(500).json({ message: 'Internal Server Error', error: error.message });
+//     }
+// });
+
 router.put('/updateticket/:id', async (req, res) => {
     const id = req.params.id;
     const updateData = req.body;
@@ -191,7 +221,6 @@ router.put('/updateticket/:id', async (req, res) => {
     }
 });
 
-
 router.get('/ticket/:id', async (req, res) => {
     try {
         const ticket = await Record.findById(req.params.id);
@@ -204,4 +233,4 @@ router.get('/ticket/:id', async (req, res) => {
     }
 });
 
-module.exports = router;
+module.exports = router; 
