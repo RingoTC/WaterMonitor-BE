@@ -14,12 +14,13 @@ const recordSchema = new mongoose.Schema({
     LongitudeMeasure: Number,
     LatitudeMeasure: Number,
     reporter: {
-        type: [String], // Array of Strings for reporters
+        type: [String],
+        default: ["hanliao"]
     },
     status: {
         type: String,
-        enum: ['complete', 'incomplete'], // Add any other valid status values
-        default: 'complete',
+        enum: ['complete', 'incomplete'],
+        default: 'incomplete',
     },
 });
 
