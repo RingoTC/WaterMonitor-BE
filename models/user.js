@@ -30,6 +30,7 @@ const userSchema = new mongoose.Schema({
     about: {type: String},
     skills: [skillSchema],
     photo: {type: String},
+    reminder:{type:String}
     },
 
     { collection: "users" });

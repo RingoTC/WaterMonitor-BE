@@ -209,5 +209,21 @@ router.put('/change/:username/skills/:skillId', isAuthorizedUser, async (req, re
 });
 
 
+router.put('/update-reminder/:username', async (req, res) => {
+    const username = req.params.username;
+    const { reminder } = req.body;
+    try {
+        const user = await User.findOne({ username: username });
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        user.reminder = reminder;
+        await user.save(); 
+        return res.json({ message: 'Reminder updated successfully', user });
+    } catch (error) {
+        console.error('Error updating user reminder:', error);
+        return res.status(500).json({ message: 'Internal Server Error' });
+    }
+});
 
 module.exports = router;
